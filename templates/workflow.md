@@ -86,42 +86,44 @@ All tasks follow a strict lifecycle:
     -   Execute the announced command.
     -   If tests fail, you **must** inform the user and begin debugging. You may attempt to propose a fix a **maximum of two times**. If the tests still fail after your second proposed fix, you **must stop**, report the persistent failure, and ask the user for guidance.
 
-4.  **Propose a Detailed, Actionable Manual Verification Plan:**
+4. **Develop and Execute a Hybrid Verification Plan (BDD Driven):**
     -   **CRITICAL:** To generate the plan, first analyze `product.md`, `product-guidelines.md`, and `plan.md` to determine the user-facing goals of the completed phase.
     -   You **must** generate a step-by-step plan that walks the user through the verification process, including any necessary commands and specific, expected outcomes.
-    -   The plan you present to the user **must** follow this format:
 
-        **For a Frontend Change:**
+    - **Step 4.1: Record BDD Scenarios:** Create or update `conductor/tracks/<track_id>/verification.md`.
+        - **Focus:** This file documents the acceptance criteria for the *Current Phase* (or active task) only.
+        - **Format:** Document the goals as BDD-style scenarios using `Given`, `When`, and `Then`.
+    - **Step 4.2: Categorize Steps:** For each `Then` (outcome), tag it as `[Auto]` or `[Manual]`.
+    - **Step 4.3: Execute Self-Verification:** The AI **must** proactively execute all `Then [Auto]` steps. Record the specific commands used and their output under each scenario.
+    - **Step 4.4: Present Hybrid Report:**
+
+        **Example `verification.md` / Report Format:**
+        ```markdown
+        ### Scenario: User profile updates successfully
+        *   **Given**: The user is logged in and on the profile page.
+        *   **When**: The user changes their name to "Conductor AI" and clicks "Save".
+        *   **Then [Auto]**: The database should store the new name.
+            *   *Verification*: Run `sql "SELECT name FROM users WHERE id=1"`
+            *   *Result*: `name: "Conductor AI"` ✅
+        *   **Then [Auto]**: The API should return a 200 OK status.
+            *   *Verification*: `curl -I -X PUT /api/profile`
+            *   *Result*: `HTTP/1.1 200 OK` ✅
+        *   **Then [Manual]**: A success toast notification should appear at the top-right.
+            *   *Action*: Please verify the toast message appearance and styling.
         ```
-        The automated tests have passed. For manual verification, please follow these steps:
 
-        **Manual Verification Steps:**
-        1.  **Start the development server with the command:** `npm run dev`
-        2.  **Open your browser to:** `http://localhost:3000`
-        3.  **Confirm that you see:** The new user profile page, with the user's name and email displayed correctly.
-        ```
+5. **Await Explicit User Feedback:**
+    - **Action:** Ask the user: "**I have self-verified the automated outcomes. Please perform the remaining [Manual] checks. Does this meet your expectations?**"
+    - **PAUSE** and await the user's response. Do not proceed without an explicit "yes".
 
-        **For a Backend Change:**
-        ```
-        The automated tests have passed. For manual verification, please follow these steps:
+6. **Create Checkpoint Commit:**
+    - Stage all changes, including the updated `verification.md`.
+    - Perform the commit (e.g., `conductor(checkpoint): Phase X verified and complete`).
 
-        **Manual Verification Steps:**
-        1.  **Ensure the server is running.**
-        2.  **Execute the following command in your terminal:** `curl -X POST http://localhost:8080/api/v1/users -d '{"name": "test"}'`
-        3.  **Confirm that you receive:** A JSON response with a status of `201 Created`.
-        ```
-
-5.  **Await Explicit User Feedback:**
-    -   After presenting the detailed plan, ask the user for confirmation: "**Does this meet your expectations? Please confirm with yes or provide feedback on what needs to be changed.**"
-    -   **PAUSE** and await the user's response. Do not proceed without an explicit yes or confirmation.
-
-6.  **Create Checkpoint Commit:**
-    -   Stage all changes. If no changes occurred in this step, proceed with an empty commit.
-    -   Perform the commit with a clear and concise message (e.g., `conductor(checkpoint): Checkpoint end of Phase X`).
-
-7.  **Attach Auditable Verification Report using Git Notes:**
-    -   **Step 7.1: Draft Note Content:** Create a detailed verification report including the automated test command, the manual verification steps, and the user's confirmation.
-    -   **Step 7.2: Attach Note:** Use the `git notes` command and the full commit hash from the previous step to attach the full report to the checkpoint commit.
+7. **Attach Auditable Verification Report using Git Notes:**
+    - Use the content of `verification.md` as the basis for the git note attached to the checkpoint commit.
+    - **Step 7.1: Draft Note Content:** Create a detailed verification report including the automated test command, the manual verification steps, and the user's confirmation.
+    - **Step 7.2: Attach Note:** Use the `git notes` command and the full commit hash from the previous step to attach the full report to the checkpoint commit.
 
 8.  **Get and Record Phase Checkpoint SHA:**
     -   **Step 8.1: Get Commit Hash:** Obtain the hash of the *just-created checkpoint commit* (`git log -1 --format="%H"`).
@@ -271,8 +273,9 @@ A task is complete when:
 5. Code passes all configured linting and static analysis checks
 6. Works beautifully on mobile (if applicable)
 7. Implementation notes added to `plan.md`
-8. Changes committed with proper message
-9. Git note with task summary attached to the commit
+8. BDD Scenarios and Self-Verification results recorded in `verification.md`
+9. Changes committed with proper message
+10. Git note with task summary attached to the commit
 
 ## Emergency Procedures
 

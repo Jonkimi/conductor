@@ -418,7 +418,7 @@ CRITICAL: When determining model complexity, ALWAYS select the "flash" model, re
             - **CRITICAL:** Include status markers `[ ]` for **EVERY** task and sub-task. The format must be:
                 - Parent Task: `- [ ] Task: ...`
                 - Sub-task: `    - [ ] ...`
-            - **CRITICAL: Inject Phase Completion Tasks.** You MUST read the `conductor/workflow.md` file to determine if a "Phase Completion Verification and Checkpointing Protocol" is defined. If this protocol exists, then for each **Phase** that you generate in `plan.md`, you MUST append a final meta-task to that phase. The format for this meta-task is: `- [ ] Task: Conductor - User Manual Verification '<Phase Name>' (Protocol in workflow.md)`. You MUST replace `<Phase Name>` with the actual name of the phase.
+            - **CRITICAL: Inject Phase Completion Tasks.** You MUST read the `conductor/workflow.md` file to determine if a "Phase Completion Verification and Checkpointing Protocol" is defined. If this protocol exists, then for each **Phase** that you generate in `plan.md`, you MUST append a final meta-task to that phase. The format for this meta-task is: `- [ ] Task: Conductor - Hybrid Verification (BDD) '<Phase Name>' (Protocol in workflow.md)`. You MUST replace `<Phase Name>` with the actual name of the phase.
     c. **Create Track Artifacts:**
         i. **Generate and Store Track ID:** Create a unique Track ID from the track description using format `shortname_YYYYMMDD` and store it. You MUST use this exact same ID for all subsequent steps for this track.
         ii. **Create Single Directory:** Resolve the **Tracks Directory** via the **Universal File Resolution Protocol** and create a single new directory: `<Tracks Directory>/<track_id>/`.
